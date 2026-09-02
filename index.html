@@ -8,32 +8,15 @@
     <style>
         :root { --primary: #2c5e3b; --secondary: #3b7b4e; --text-dark: #333; --danger: #d9534f; --success: #28a745; --warning: #ffc107; }
         
-        /* NUEVO DISEÑO DE FONDO */
         body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            color: var(--text-dark); 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center;
-            /* Aquí cargamos la imagen */
-            background-image: url('fondo.jpeg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            font-family: 'Segoe UI', system-ui, sans-serif; color: var(--text-dark); margin: 0; padding: 20px; 
+            display: flex; justify-content: center;
+            background-image: url('fondo.jpeg'); background-size: cover; background-position: center; background-attachment: fixed;
         }
         
-        /* CONTENEDOR CON TRANSPARENCIA ELEGANTE */
         .container { 
-            width: 100%; 
-            max-width: 500px; 
-            /* Fondo blanco al 95% de opacidad para que deje ver un poco el paisaje */
-            background: rgba(255, 255, 255, 0.95); 
-            /* Efecto de desenfoque tipo cristal */
-            backdrop-filter: blur(8px);
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3); 
+            width: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(8px); padding: 30px; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.3); 
         }
 
         h1 { color: var(--primary); text-align: center; font-size: 22px; margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; }
@@ -47,14 +30,14 @@
         .loader { display: none; text-align: center; margin-top: 20px; color: var(--secondary); font-weight: bold; }
         .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 15px;}
         
-        /* Modal y Admin */
         .btn-admin-access { background: transparent; color: #555; padding: 5px; font-size: 13px; text-decoration: underline; width: auto; display: block; margin: 20px auto 0 auto; font-weight: bold;}
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; }
+        
         #adminPanel { display: none; background: rgba(255, 243, 205, 0.9); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107; }
+        #eventContainer { display:none; background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #ccc; }
         #reader { width: 100%; display: none; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--primary); }
         
-        /* Diseño de Predios */
         .user-header { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-top: 25px; margin-bottom: 20px; }
         .user-header h2 { margin: 0 0 5px 0; font-size: 18px; }
         .bocatoma-group { background: rgba(248, 249, 250, 0.9); border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
@@ -67,7 +50,6 @@
         .predio-info strong { display: block; color: var(--primary); font-size: 15px; margin-bottom: 3px; }
         .predio-details { display: none; padding: 0 15px 15px 15px; border-top: 1px dashed #eee; }
         
-        /* Botones de acción admin */
         .action-btns { display: flex; gap: 5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;}
         .btn-success { background: var(--success); padding: 10px;} 
         .btn-warning { background: var(--warning); color: #000; padding: 10px;} 
@@ -79,15 +61,30 @@
 <div class="container">
     <h1>Comisión de Regantes<br><small>Sub-Sector Pumacoccha-Huaro</small></h1>
 
+    <!-- PANEL DE ADMINISTRADOR -->
     <div id="adminPanel">
         <h3 id="adminTitle" style="margin-top:0; color: #856404;"></h3>
-        <input type="text" id="idEvento" placeholder="ID Evento (Obligatorio para asistencias)" style="display:none; margin-bottom:10px;">
+        
+        <!-- MÓDULO DE CONTROL DE ASISTENCIAS -->
+        <div id="eventContainer">
+            <label style="font-weight:bold; color:var(--primary); font-size: 14px;">1. ID del Evento (Se guarda automáticamente)</label>
+            <input type="text" id="idEvento" placeholder="Ej: EV-001" onkeyup="guardarEvento()" style="margin-top:5px; margin-bottom:5px;">
+            <small style="color:#555; display:block; margin-bottom:15px; line-height: 1.2;">Puedes cerrar la ventana o recargar; el evento seguirá activo para continuar.</small>
+            
+            <label style="font-weight:bold; color:var(--primary); font-size: 14px;">2. Control de Cámara</label>
+            <div style="display: flex; gap: 10px; margin-top:5px;">
+                <button id="btnStartCam" style="background-color: #17a2b8; margin:0;" onclick="iniciarEscaner()">📷 Iniciar Cámara</button>
+                <button id="btnStopCam" style="background-color: #6c757d; margin:0; display:none;" onclick="detenerEscaner()">⏹ Detener Cámara</button>
+            </div>
+        </div>
+
         <div id="adminControls"></div>
         <button style="background: var(--danger); margin-top: 10px;" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
     <div id="reader"></div>
     
+    <!-- MÓDULO DE INGRESO MANUAL / PÚBLICO -->
     <div class="search-type">
         <label><input type="radio" name="searchType" value="dni" checked> DNI</label>
         <label><input type="radio" name="searchType" value="catastro"> Código Catastral</label>
@@ -119,10 +116,19 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwEA0dPJHtWupjtp7QihhUhmDiyDrJ5sOCvQNpM__M45YI6slb3sSJCmLSsDCPk-tlB6Q/exec"; 
     
     let rolActual = "PUBLICO";
-    let html5QrcodeScanner;
+    let html5QrcodeScanner = null;
     let datosPadron = null; 
 
-    // Interfaz de Búsqueda
+    // ======== PERSISTENCIA DEL EVENTO (LOCAL STORAGE) ========
+    function guardarEvento() {
+        localStorage.setItem("evento_Pumacoccha", document.getElementById("idEvento").value);
+    }
+    function cargarEvento() {
+        const guardado = localStorage.getItem("evento_Pumacoccha");
+        if(guardado) document.getElementById("idEvento").value = guardado;
+    }
+
+    // ======== INTERFAZ DE BÚSQUEDA MANUAL ========
     document.querySelectorAll('input[name="searchType"]').forEach((elem) => {
         elem.addEventListener("change", function(e) {
             const input = document.getElementById("searchInput");
@@ -132,7 +138,7 @@
         });
     });
 
-    // ==================== LÓGICA DE LOGIN ====================
+    // ======== LÓGICA DE LOGIN ========
     async function iniciarSesion() {
         const user = document.getElementById("usuarioInput").value;
         const pass = document.getElementById("passwordInput").value;
@@ -151,9 +157,7 @@
             } else {
                 document.getElementById("loginMsg").innerText = data.mensaje;
             }
-        } catch (e) {
-            document.getElementById("loginMsg").innerText = "Error de conexión con el servidor.";
-        }
+        } catch (e) { document.getElementById("loginMsg").innerText = "Error de conexión con el servidor."; }
     }
 
     function activarPanelAdministrativo() {
@@ -162,37 +166,78 @@
         const controls = document.getElementById("adminControls");
         
         if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
-            document.getElementById("idEvento").style.display = "block";
-            controls.innerHTML = `<button style="background-color: #17a2b8;" onclick="iniciarEscaner()">📸 Activar Escáner de Cámara</button>`;
+            document.getElementById("eventContainer").style.display = "block";
+            cargarEvento(); // Recupera el ID del evento si existía
+            controls.innerHTML = "";
         } else if (rolActual === "CONTADOR") {
-            controls.innerHTML = "<p>Modo Contador: Busca un predio para registrar pagos.</p>";
+            document.getElementById("eventContainer").style.display = "none";
+            controls.innerHTML = "<p>Modo Contador: Usa la barra de búsqueda para digitar el predio o DNI y registrar pagos.</p>";
         }
     }
 
     function cerrarSesion() {
         rolActual = "PUBLICO";
         document.getElementById("adminPanel").style.display = "none";
-        document.getElementById("idEvento").style.display = "none";
-        if(html5QrcodeScanner) { html5QrcodeScanner.clear(); }
-        document.getElementById("reader").style.display = "none";
+        document.getElementById("eventContainer").style.display = "none";
+        detenerEscaner();
         document.getElementById("results").innerHTML = "";
     }
 
+    // ======== CONTROL DE CÁMARA INTELIGENTE ========
+    function actualizarBotonesCamara(escaneando) {
+        if(escaneando) {
+            document.getElementById("reader").style.display = "block";
+            document.getElementById("btnStartCam").style.display = "none";
+            document.getElementById("btnStopCam").style.display = "block";
+        } else {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("btnStartCam").style.display = "block";
+            document.getElementById("btnStartCam").innerHTML = "▶ Continuar Escaneando";
+            document.getElementById("btnStopCam").style.display = "none";
+        }
+    }
+
     function iniciarEscaner() {
-        document.getElementById("reader").style.display = "block";
+        actualizarBotonesCamara(true);
         html5QrcodeScanner = new Html5Qrcode("reader");
         html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 250} },
             (decodedText) => {
-                html5QrcodeScanner.stop();
-                document.getElementById("reader").style.display = "none";
-                document.getElementById("searchInput").value = decodedText;
-                document.querySelector('input[value="catastro"]').checked = true;
+                // Al detectar, PAUSAMOS la cámara automáticamente
+                detenerEscaner();
+                
+                const escaneo = decodedText.trim();
+                if(escaneo.length === 8 && !isNaN(escaneo)) {
+                    document.querySelector('input[value="dni"]').checked = true;
+                } else {
+                    document.querySelector('input[value="catastro"]').checked = true;
+                }
+                
+                document.getElementById("searchInput").value = escaneo;
                 ejecutarBusqueda();
             }
-        ).catch(err => alert("Error al iniciar cámara: " + err));
+        ).catch(err => {
+            alert("Error al iniciar cámara: " + err);
+            actualizarBotonesCamara(false);
+        });
     }
 
-    // ==================== BÚSQUEDA Y RENDERIZADO ====================
+    function detenerEscaner() {
+        if(html5QrcodeScanner) {
+            try {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    actualizarBotonesCamara(false);
+                }).catch(err => {
+                    html5QrcodeScanner.clear();
+                    actualizarBotonesCamara(false);
+                });
+            } catch (e) {
+                actualizarBotonesCamara(false);
+            }
+        }
+    }
+
+    // ======== BÚSQUEDA Y RENDERIZADO ========
     async function ejecutarBusqueda() {
         const type = document.querySelector('input[name="searchType"]:checked').value;
         const query = document.getElementById("searchInput").value.trim().toUpperCase();
@@ -203,6 +248,7 @@
 
         resultsDiv.innerHTML = "";
         loader.style.display = "block";
+        loader.innerText = "Conectando con la base de datos...";
 
         try {
             if (!datosPadron) {
@@ -242,8 +288,22 @@
         let html = `<div class="user-header"><h2>Socio: ${socio.Nombre}</h2><p>DNI: ${socio.DNI}</p></div>`;
 
         if(prediosArray.length === 0) {
-            resultsDiv.innerHTML = html + `<p style="text-align:center;">No hay terrenos registrados.</p>`;
+            resultsDiv.innerHTML = html + `<p style="text-align:center; background: rgba(255,255,255,0.8); padding:10px; border-radius:8px;">No hay terrenos registrados.</p>`;
             return;
+        }
+
+        // BLOQUE DE ACCIÓN MASIVA (Solo administradores)
+        if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
+            html += `
+            <div style="background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px dashed var(--secondary);">
+                <p style="margin: 0 0 10px 0; font-weight: bold; text-align: center; color: var(--primary);">Acción Masiva (${prediosArray.length} predios en total)</p>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-success" style="margin:0; flex:1; font-size:13px;" onclick="asistenciaMasiva('${socio.DNI}', 'Asistió')">Asistió a Todos</button>
+                    <button class="btn-warning" style="margin:0; flex:1; font-size:13px;" onclick="asistenciaMasiva('${socio.DNI}', 'Tarde')">Tarde a Todos</button>
+                    <button class="btn-danger" style="margin:0; flex:1; font-size:13px;" onclick="asistenciaMasiva('${socio.DNI}', 'Falta')">Falta a Todos</button>
+                </div>
+            </div>
+            `;
         }
 
         const gruposBocatoma = {};
@@ -313,7 +373,7 @@
         panel.style.display = panel.style.display === "block" ? "none" : "block";
     }
 
-    // ==================== ACCIONES DE ESCRITURA EN EXCEL ====================
+    // ======== ACCIONES DE ESCRITURA EN EXCEL ========
     async function registrarAsistencia(catastro, dni, estado) {
         const idEvento = document.getElementById("idEvento").value;
         if (!idEvento) return alert("ATENCIÓN: Debes ingresar el ID del Evento (Ej: EV-001) en el panel de administrador.");
@@ -323,6 +383,28 @@
             body: JSON.stringify({ action: "registrar_asistencia", id_evento: idEvento, dni: dni, catastro: catastro, estado: estado })
         });
         alert(`Guardado: El terreno ${catastro} registra "${estado}".`);
+    }
+
+    async function asistenciaMasiva(dni, estado) {
+        const idEvento = document.getElementById("idEvento").value;
+        if (!idEvento) return alert("ATENCIÓN: Debes ingresar el ID del Evento (Ej: EV-001) en el panel de administrador.");
+        
+        const prediosSocio = datosPadron.predios.filter(p => p.DNI_Socio.toString() === dni);
+        if(!confirm(`¿Confirmas que deseas marcar "${estado}" a los ${prediosSocio.length} predios de este socio?`)) return;
+
+        const loader = document.getElementById("loader");
+        loader.style.display = "block";
+        loader.innerText = `Guardando ${prediosSocio.length} registros en el servidor...`;
+
+        for(let i=0; i < prediosSocio.length; i++) {
+            await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "registrar_asistencia", id_evento: idEvento, dni: dni, catastro: prediosSocio[i].Código, estado: estado })
+            });
+        }
+        
+        loader.style.display = "none";
+        alert(`¡Éxito! Se marcaron ${prediosSocio.length} predios como "${estado}".`);
     }
 
     async function registrarPago(catastro, dni) {
