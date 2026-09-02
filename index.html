@@ -3,139 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta Catastral - Pumacoccha Huaro</title>
+    <title>Sistema de Gestión - Pumacoccha Huaro</title>
     <style>
         :root {
-            --primary: #2c5e3b;
-            --secondary: #3b7b4e;
-            --bg-color: #f0f4f1;
-            --text-dark: #333;
-            --card-bg: #ffffff;
-            --danger: #d9534f;
-            --success: #28a745;
+            --primary: #2c5e3b; --secondary: #3b7b4e; --bg-color: #f0f4f1;
+            --text-dark: #333; --card-bg: #ffffff; --danger: #d9534f; --success: #28a745;
         }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); position: relative; }
+        h1 { color: var(--primary); text-align: center; font-size: 22px; margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; }
         
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        }
-
-        h1 {
-            color: var(--primary);
-            text-align: center;
-            font-size: 22px;
-            margin-top: 0;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .search-type {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .search-type label { cursor: pointer; font-weight: 600; color: #555; }
-
-        input[type="text"] {
-            width: 100%; padding: 14px; border: 1px solid #ced4da;
-            border-radius: 8px; font-size: 16px; box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus { outline: none; border-color: var(--secondary); }
-
-        button {
-            width: 100%; padding: 14px; background-color: var(--secondary);
-            color: white; border: none; border-radius: 8px; font-size: 16px;
-            font-weight: bold; cursor: pointer; margin-top: 15px;
-        }
-
+        .search-type { display: flex; justify-content: space-around; margin-bottom: 20px; background: #e9ecef; padding: 10px; border-radius: 8px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; padding: 14px; background-color: var(--secondary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
         button:hover { background-color: var(--primary); }
+        
+        /* Botón de Acceso Administrativo Discreto */
+        .btn-admin-access { background: transparent; color: #888; padding: 5px; font-size: 12px; margin-top: 20px; text-decoration: underline; width: auto; }
+        .btn-admin-access:hover { background: transparent; color: var(--primary); }
 
+        /* Estilos del Modal de Login */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; }
+        .modal-content h2 { margin-top: 0; color: var(--primary); text-align: center; }
+        .close-modal { text-align: right; cursor: pointer; color: var(--danger); font-weight: bold; margin-bottom: 10px; }
+        
+        /* Panel Administrativo (Oculto por defecto) */
+        #adminPanel { display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107; }
+        
         .loader { display: none; text-align: center; margin-top: 20px; color: var(--secondary); font-weight: bold; }
-        
-        .user-header {
-            background: var(--primary); color: white; padding: 15px;
-            border-radius: 8px; margin-top: 25px; margin-bottom: 20px;
-        }
-        .user-header h2 { margin: 0 0 5px 0; font-size: 18px; }
-        .user-header p { margin: 0; opacity: 0.9; }
-
-        /* Estilos de Grupo por Bocatoma */
-        .bocatoma-group {
-            background: #f8f9fa; border: 1px solid #dee2e6;
-            border-radius: 10px; padding: 15px; margin-bottom: 20px;
-        }
-        
-        .bocatoma-header {
-            border-bottom: 2px solid var(--secondary); padding-bottom: 10px; margin-bottom: 15px;
-        }
-        
-        .bocatoma-header h3 { margin: 0 0 5px 0; color: var(--text-dark); font-size: 17px; text-transform: uppercase; }
-        
-        .bocatoma-stats {
-            display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; color: #555;
-        }
-        
-        .topos-badge {
-            background-color: var(--secondary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 15px;
-        }
-
-        /* Estilos del Acordeón (Tarjetas Desplegables) */
-        .predio-card {
-            background: var(--card-bg); border: 1px solid #e0e0e0; border-left: 5px solid var(--primary);
-            border-radius: 8px; margin-bottom: 10px; overflow: hidden; transition: all 0.3s;
-        }
-        
-        .predio-summary {
-            padding: 15px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; background: #fff;
-        }
-        
-        .predio-summary:hover { background: #f1f8f3; }
-        
-        .predio-info strong { display: block; color: var(--primary); font-size: 15px; margin-bottom: 3px; }
-        .predio-info span { color: #666; font-size: 14px; }
-        
-        .predio-icon { font-size: 12px; color: #888; transition: transform 0.3s; }
-        .predio-card.active .predio-icon { transform: rotate(180deg); }
-        
-        /* Contenido Oculto (Tablas) */
-        .predio-details { display: none; padding: 0 15px 15px 15px; border-top: 1px dashed #eee; }
-        
-        .details-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        .details-table td { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-        .details-table tr:last-child td { border-bottom: none; }
-        .text-right { text-align: right; }
-        
-        .badge { padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
-        .badge.alert { background: #f8d7da; color: var(--danger); }
-        .badge.success { background: #d4edda; color: var(--success); }
-        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 20px;}
+        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 15px;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Comisión de Regantes<br><small>Sub-Sector Pumacoccha-Huaro</small></h1>
+
+    <!-- PANEL ADMINISTRATIVO (Se activa al iniciar sesión) -->
+    <div id="adminPanel">
+        <h3 id="adminTitle" style="margin-top:0; color: #856404;"></h3>
+        <div id="adminControls"></div>
+        <button style="background-color: var(--danger); margin-top: 10px; padding: 10px;" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
     
     <div class="search-type">
         <label><input type="radio" name="searchType" value="dni" checked> DNI</label>
@@ -143,178 +53,110 @@
     </div>
     
     <input type="text" id="searchInput" placeholder="Ingrese el DNI del socio...">
-    <button onclick="ejecutarBusqueda()">CONSULTAR DATOS</button>
+    <button onclick="ejecutarBusqueda()">CONSULTAR PADRÓN</button>
 
-    <div class="loader" id="loader">Conectando con el padrón...</div>
+    <div class="loader" id="loader">Procesando petición...</div>
     <div id="results"></div>
+
+    <div style="text-align: center;">
+        <button class="btn-admin-access" onclick="document.getElementById('loginModal').style.display = 'flex'">Acceso Administrativo</button>
+    </div>
+</div>
+
+<!-- MODAL DE INICIO DE SESIÓN -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <div class="close-modal" onclick="document.getElementById('loginModal').style.display = 'none'">X Cerrar</div>
+        <h2>Iniciar Sesión</h2>
+        <input type="text" id="usuarioInput" placeholder="Usuario">
+        <input type="password" id="passwordInput" placeholder="Contraseña">
+        <button onclick="iniciarSesion()">Ingresar</button>
+        <div id="loginMsg" style="text-align: center; margin-top: 10px; font-weight: bold;"></div>
+    </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxq4ttvlV8r_I9d-EDnx34TS-SwFDkHLlhsE1iwqpj1jMya8uNrXHeOJjVkzhdDKc5lGQ/exec";
+    // ⚠️ REEMPLAZA ESTE ENLACE POR EL NUEVO ENLACE DE TU SCRIPT
+    const API_URL = "https://script.google.com/macros/s/AKfycbxRNiT2A7YloqsKhHhKBgpjgFBLIwEkLsR3pnrbyBYpPLYy_TBOt--6BbKoBHGkAsegKg/exec";
+    
+    let rolActual = "PUBLICO"; // Por defecto, el usuario no tiene permisos
 
-    document.querySelectorAll('input[name="searchType"]').forEach((elem) => {
-        elem.addEventListener("change", function(e) {
-            const input = document.getElementById("searchInput");
-            input.placeholder = e.target.value === "dni" ? "Ingrese el DNI del socio..." : "Ingrese el Código Catastral (Ej: P-001)...";
-            input.value = "";
-            document.getElementById("results").innerHTML = "";
-        });
-    });
+    async function iniciarSesion() {
+        const user = document.getElementById("usuarioInput").value;
+        const pass = document.getElementById("passwordInput").value;
+        const msgDiv = document.getElementById("loginMsg");
+        
+        msgDiv.innerHTML = "Validando...";
+        msgDiv.style.color = "#333";
 
+        try {
+            const urlLogin = `${API_URL}?action=login&usuario=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+            const response = await fetch(urlLogin);
+            const data = await response.json();
+
+            if (data.success) {
+                rolActual = data.rol;
+                document.getElementById("loginModal").style.display = "none";
+                activarPanelAdministrativo();
+                document.getElementById("usuarioInput").value = "";
+                document.getElementById("passwordInput").value = "";
+            } else {
+                msgDiv.innerHTML = data.mensaje;
+                msgDiv.style.color = "red";
+            }
+        } catch (error) {
+            msgDiv.innerHTML = "Error de conexión con el servidor.";
+            msgDiv.style.color = "red";
+        }
+    }
+
+    function activarPanelAdministrativo() {
+        const panel = document.getElementById("adminPanel");
+        const title = document.getElementById("adminTitle");
+        const controls = document.getElementById("adminControls");
+        
+        panel.style.display = "block";
+        title.innerHTML = `Sesión Activa: ${rolActual}`;
+
+        if (rolActual === "TOTAL") {
+            controls.innerHTML = "<p>Acceso total. Podrás editar pagos, asistencias y datos de usuarios al realizar una búsqueda.</p>";
+        } else if (rolActual === "ASISTENCIAS") {
+            controls.innerHTML = `<button style="background-color: #17a2b8;" onclick="abrirEscaner()">📸 Activar Escáner de Asistencias</button>`;
+        } else if (rolActual === "CONTADOR") {
+            controls.innerHTML = "<p>Modo Contador activo. Busca un predio para registrar pagos.</p>";
+        }
+    }
+
+    function cerrarSesion() {
+        rolActual = "PUBLICO";
+        document.getElementById("adminPanel").style.display = "none";
+        document.getElementById("results").innerHTML = "";
+    }
+
+    // Lógica de búsqueda modificada para enviar el Rol al servidor en el siguiente paso
     async function ejecutarBusqueda() {
         const type = document.querySelector('input[name="searchType"]:checked').value;
         const query = document.getElementById("searchInput").value.trim().toUpperCase();
         const resultsDiv = document.getElementById("results");
         const loader = document.getElementById("loader");
 
-        if (!query) {
-            resultsDiv.innerHTML = "<div class='msg-error'>Por favor, ingrese un dato válido.</div>";
-            return;
-        }
+        if (!query) return;
 
         resultsDiv.innerHTML = "";
         loader.style.display = "block";
 
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(`${API_URL}?action=consulta`);
             const data = await response.json();
             loader.style.display = "none";
+            
+            // Aquí iría la lógica de renderizado que ya teníamos,
+            // pero le inyectaremos botones si rolActual === "TOTAL" o "CONTADOR"
+            resultsDiv.innerHTML = `<div class="msg-error" style="background:#d4edda; color:#28a745;">Búsqueda ejecutada exitosamente. (El diseño se integrará en el siguiente paso).</div>`;
 
-            const socios = data.socios;
-            const predios = data.predios;
-
-            if (type === "dni") {
-                const socio = socios.find(s => s.DNI.toString() === query);
-                if (socio) {
-                    const prediosSocio = predios.filter(p => p.DNI_Socio.toString() === query);
-                    mostrarResultadosAgrupados(socio, prediosSocio);
-                } else {
-                    resultsDiv.innerHTML = "<div class='msg-error'>Socio no encontrado en el padrón.</div>";
-                }
-            } else {
-                const predio = predios.find(p => p.Código && p.Código.toString().toUpperCase() === query);
-                if (predio) {
-                    const socio = socios.find(s => s.DNI.toString() === predio.DNI_Socio.toString());
-                    mostrarResultadosAgrupados(socio || {Nombre: "Socio Desconocido", DNI: predio.DNI_Socio}, [predio]);
-                } else {
-                    resultsDiv.innerHTML = "<div class='msg-error'>Código catastral no registrado.</div>";
-                }
-            }
         } catch (error) {
             loader.style.display = "none";
-            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión. Revise su internet o recargue la página.</div>";
-        }
-    }
-
-    function mostrarResultadosAgrupados(socio, prediosArray) {
-        const resultsDiv = document.getElementById("results");
-        
-        let html = `
-            <div class="user-header">
-                <h2>Socio: ${socio.Nombre}</h2>
-                <p>DNI: ${socio.DNI}</p>
-            </div>
-        `;
-
-        if(prediosArray.length === 0) {
-            html += `<p style="text-align:center; color:#666;">No hay terrenos registrados a este DNI.</p>`;
-            resultsDiv.innerHTML = html;
-            return;
-        }
-
-        // 1. AGRUPAR PREDIOS POR BOCATOMA
-        const gruposBocatoma = {};
-        prediosArray.forEach(p => {
-            const bocatoma = p.Bocatoma || 'Sin Bocatoma Asignada';
-            if (!gruposBocatoma[bocatoma]) {
-                gruposBocatoma[bocatoma] = [];
-            }
-            gruposBocatoma[bocatoma].push(p);
-        });
-
-        // 2. CREAR EL HTML POR CADA GRUPO
-        for (const [bocatoma, prediosDelGrupo] of Object.entries(gruposBocatoma)) {
-            
-            // Sumar el área de todos los predios de esta bocatoma
-            let sumaArea = 0;
-            prediosDelGrupo.forEach(p => {
-                sumaArea += parseFloat(p.Área) || 0;
-            });
-            
-            // Convertir a Topos (Hectáreas / 0.33)
-            const totalTopos = (sumaArea / 0.33).toFixed(2);
-
-            html += `
-            <div class="bocatoma-group">
-                <div class="bocatoma-header">
-                    <h3>📍 Bocatoma: ${bocatoma}</h3>
-                    <div class="bocatoma-stats">
-                        <span>Suma Hectáreas: ${sumaArea.toFixed(3)} Ha</span>
-                        <span class="topos-badge">${totalTopos} Topos</span>
-                    </div>
-                </div>
-            `;
-
-            // Crear los recuadros desplegables de cada terreno
-            prediosDelGrupo.forEach((p, index) => {
-                const deudas = Number(p.Deudas) || 0;
-                const faltas = Number(p.Faltas) || 0;
-                
-                const estadoDeuda = deudas > 0 ? `<span class="badge alert">S/ ${deudas.toFixed(2)}</span>` : `<span class="badge success">Al día</span>`;
-                const estadoFaltas = faltas > 0 ? `<span class="badge alert">${faltas} Faltas</span>` : `<span class="badge success">Sin faltas</span>`;
-                
-                // Generar un ID único para que el acordeón sepa cuál abrir
-                const accordionId = 'panel-' + bocatoma.replace(/\s+/g, '') + '-' + index;
-
-                html += `
-                <div class="predio-card" id="card-${accordionId}">
-                    <div class="predio-summary" onclick="toggleAcordeon('${accordionId}')">
-                        <div class="predio-info">
-                            <strong>Terreno Cód: ${p.Código}</strong>
-                            <span>Extensión: ${p.Área || 0} Ha</span>
-                        </div>
-                        <div class="predio-icon">▼</div>
-                    </div>
-                    
-                    <div class="predio-details" id="${accordionId}">
-                        <table class="details-table">
-                            <tbody>
-                                <tr>
-                                    <td><strong>Asistencias (Asambleas/Faenas)</strong></td>
-                                    <td class="text-right">${p.Asistencias || 0}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Historial de Faltas</strong></td>
-                                    <td class="text-right">${estadoFaltas}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Deudas Pendientes</strong></td>
-                                    <td class="text-right">${estadoDeuda}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                `;
-            });
-            
-            html += `</div>`; // Cierra el grupo de la bocatoma
-        }
-
-        resultsDiv.innerHTML = html;
-    }
-
-    // Función que abre y cierra las tarjetas
-    function toggleAcordeon(id) {
-        const panel = document.getElementById(id);
-        const card = document.getElementById('card-' + id);
-        
-        if (panel.style.display === "block") {
-            panel.style.display = "none";
-            card.classList.remove("active");
-        } else {
-            panel.style.display = "block";
-            card.classList.add("active");
+            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión.</div>";
         }
     }
 </script>
