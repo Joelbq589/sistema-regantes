@@ -3,50 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión - Pumacoccha Huaro</title>
+    <title>Sistema Catastral - Pumacoccha Huaro</title>
+    <!-- Librería para la cámara -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        :root { --primary: #2c5e3b; --secondary: #3b7b4e; --bg-color: #f0f4f1; --danger: #d9534f; --success: #28a745; --warning: #ffc107; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; }
-        .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        input, button, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
-        button { background-color: var(--secondary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-admin { background: transparent; color: #888; border: none; text-decoration: underline; font-size: 12px; margin-top: 20px; }
+        :root { --primary: #2c5e3b; --secondary: #3b7b4e; --bg-color: #f0f4f1; --text-dark: #333; --card-bg: #ffffff; --danger: #d9534f; --success: #28a745; --warning: #ffc107; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        h1 { color: var(--primary); text-align: center; font-size: 22px; margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; }
+        
+        .search-type { display: flex; justify-content: space-around; margin-bottom: 20px; background: #e9ecef; padding: 10px; border-radius: 8px; }
+        .search-type label { cursor: pointer; font-weight: 600; color: #555; }
+        input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; padding: 14px; background-color: var(--secondary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: all 0.3s ease; }
+        button:hover { background-color: var(--primary); }
+        
+        .loader { display: none; text-align: center; margin-top: 20px; color: var(--secondary); font-weight: bold; }
+        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 15px;}
+        
+        /* Modal y Admin */
+        .btn-admin-access { background: transparent; color: #888; padding: 5px; font-size: 12px; text-decoration: underline; width: auto; display: block; margin: 20px auto 0 auto; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; }
+        #adminPanel { display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107; }
         #reader { width: 100%; display: none; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--primary); }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 350px; }
-        .action-btns { display: flex; gap: 5px; margin-top: 10px; }
-        .btn-success { background: var(--success); } .btn-warning { background: var(--warning); color: #000; } .btn-danger { background: var(--danger); }
-        #adminPanel { display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        
+        /* Diseño de Predios */
+        .user-header { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-top: 25px; margin-bottom: 20px; }
+        .user-header h2 { margin: 0 0 5px 0; font-size: 18px; }
+        .bocatoma-group { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .bocatoma-header { border-bottom: 2px solid var(--secondary); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .bocatoma-header h3 { margin: 0; font-size: 16px; text-transform: uppercase; }
+        .topos-badge { background-color: var(--secondary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 14px; font-weight: bold; }
+        
+        .predio-card { background: var(--card-bg); border: 1px solid #e0e0e0; border-left: 5px solid var(--primary); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+        .predio-summary { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .predio-info strong { display: block; color: var(--primary); font-size: 15px; margin-bottom: 3px; }
+        .predio-details { display: none; padding: 0 15px 15px 15px; border-top: 1px dashed #eee; }
+        
+        /* Botones de acción admin */
+        .action-btns { display: flex; gap: 5px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;}
+        .btn-success { background: var(--success); padding: 10px;} 
+        .btn-warning { background: var(--warning); color: #000; padding: 10px;} 
+        .btn-danger { background: var(--danger); padding: 10px;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Sub-Sector Pumacoccha-Huaro</h1>
+    <h1>Comisión de Regantes<br><small>Sub-Sector Pumacoccha-Huaro</small></h1>
 
     <div id="adminPanel">
-        <h3 id="adminTitle" style="margin-top:0;"></h3>
-        <input type="text" id="idEvento" placeholder="ID Evento (Ej: EV-001)" style="display:none;">
+        <h3 id="adminTitle" style="margin-top:0; color: #856404;"></h3>
+        <input type="text" id="idEvento" placeholder="ID Evento (Obligatorio para asistencias)" style="display:none; margin-bottom:10px;">
         <div id="adminControls"></div>
-        <button style="background: var(--danger);" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <button style="background: var(--danger); margin-top: 10px;" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
     <div id="reader"></div>
+    
+    <div class="search-type">
+        <label><input type="radio" name="searchType" value="dni" checked> DNI</label>
+        <label><input type="radio" name="searchType" value="catastro"> Código Catastral</label>
+    </div>
+    
+    <input type="text" id="searchInput" placeholder="Ingrese el DNI del socio...">
+    <button onclick="ejecutarBusqueda()">CONSULTAR DATOS</button>
 
-    <input type="text" id="searchInput" placeholder="Ingrese DNI o Catastro...">
-    <button onclick="ejecutarBusqueda()">BUSCAR SOCIO</button>
-    
-    <div id="results" style="margin-top: 20px;"></div>
-    
-    <button class="btn-admin" onclick="document.getElementById('loginModal').style.display='flex'">Acceso Administrativo</button>
+    <div class="loader" id="loader">Conectando con la base de datos...</div>
+    <div id="results"></div>
+
+    <button class="btn-admin-access" onclick="document.getElementById('loginModal').style.display = 'flex'">Acceso Administrativo</button>
 </div>
 
 <!-- Modal Login -->
 <div id="loginModal" class="modal">
     <div class="modal-content">
-        <h2 style="color:var(--primary); margin-top:0;">Login</h2>
+        <h2 style="color:var(--primary); margin-top:0;">Login Administrador</h2>
         <input type="text" id="usuarioInput" placeholder="Usuario">
         <input type="password" id="passwordInput" placeholder="Contraseña">
         <button onclick="iniciarSesion()">Ingresar</button>
@@ -56,36 +89,57 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwEA0dPJHtWupjtp7QihhUhmDiyDrJ5sOCvQNpM__M45YI6slb3sSJCmLSsDCPk-tlB6Q/exec"; // REEMPLAZA CON TU ENLACE NUEVO
+    // TU ENLACE DEL SCRIPT (Asegúrate de poner el último que generaste)
+    const API_URL = "https://script.google.com/macros/s/AKfycbwEA0dPJHtWupjtp7QihhUhmDiyDrJ5sOCvQNpM__M45YI6slb3sSJCmLSsDCPk-tlB6Q/exec"; 
+    
     let rolActual = "PUBLICO";
     let html5QrcodeScanner;
-    let datosPadron = null; // Guardará la DB temporalmente para no saturar internet
+    let datosPadron = null; // Caché para búsquedas rápidas
 
+    // Interfaz de Búsqueda
+    document.querySelectorAll('input[name="searchType"]').forEach((elem) => {
+        elem.addEventListener("change", function(e) {
+            const input = document.getElementById("searchInput");
+            input.placeholder = e.target.value === "dni" ? "Ingrese el DNI del socio..." : "Ingrese el Código Catastral...";
+            input.value = "";
+            document.getElementById("results").innerHTML = "";
+        });
+    });
+
+    // ==================== LÓGICA DE LOGIN ====================
     async function iniciarSesion() {
         const user = document.getElementById("usuarioInput").value;
         const pass = document.getElementById("passwordInput").value;
         document.getElementById("loginMsg").innerText = "Validando...";
 
-        const response = await fetch(`${API_URL}?action=login&usuario=${user}&password=${pass}`);
-        const data = await response.json();
+        try {
+            const response = await fetch(`${API_URL}?action=login&usuario=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`);
+            const data = await response.json();
 
-        if (data.success) {
-            rolActual = data.rol;
-            document.getElementById("loginModal").style.display = "none";
-            activarPanelAdministrativo();
-        } else {
-            document.getElementById("loginMsg").innerText = data.mensaje;
+            if (data.success) {
+                rolActual = data.rol;
+                document.getElementById("loginModal").style.display = "none";
+                activarPanelAdministrativo();
+                document.getElementById("usuarioInput").value = "";
+                document.getElementById("passwordInput").value = "";
+            } else {
+                document.getElementById("loginMsg").innerText = data.mensaje;
+            }
+        } catch (e) {
+            document.getElementById("loginMsg").innerText = "Error de conexión con el servidor.";
         }
     }
 
     function activarPanelAdministrativo() {
         document.getElementById("adminPanel").style.display = "block";
-        document.getElementById("adminTitle").innerText = `Rol: ${rolActual}`;
-        
+        document.getElementById("adminTitle").innerText = `Rol Activo: ${rolActual}`;
         const controls = document.getElementById("adminControls");
+        
         if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
             document.getElementById("idEvento").style.display = "block";
-            controls.innerHTML = `<button onclick="iniciarEscaner()">📸 Iniciar Escáner QR/Barras</button>`;
+            controls.innerHTML = `<button style="background-color: #17a2b8;" onclick="iniciarEscaner()">📸 Activar Escáner de Cámara</button>`;
+        } else if (rolActual === "CONTADOR") {
+            controls.innerHTML = "<p>Modo Contador: Busca un predio para registrar pagos.</p>";
         }
     }
 
@@ -93,85 +147,172 @@
         rolActual = "PUBLICO";
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("idEvento").style.display = "none";
-        if(html5QrcodeScanner) html5QrcodeScanner.clear();
+        if(html5QrcodeScanner) { html5QrcodeScanner.clear(); }
         document.getElementById("reader").style.display = "none";
+        document.getElementById("results").innerHTML = "";
     }
 
     function iniciarEscaner() {
         document.getElementById("reader").style.display = "block";
         html5QrcodeScanner = new Html5Qrcode("reader");
-        html5QrcodeScanner.start(
-            { facingMode: "environment" }, 
-            { fps: 10, qrbox: {width: 250, height: 250} },
+        html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: {width: 250, height: 250} },
             (decodedText) => {
                 html5QrcodeScanner.stop();
                 document.getElementById("reader").style.display = "none";
                 document.getElementById("searchInput").value = decodedText;
+                // Si el QR tiene un código, lo busca automáticamente
+                document.querySelector('input[value="catastro"]').checked = true;
                 ejecutarBusqueda();
             }
-        ).catch(err => alert("Error de cámara: " + err));
+        ).catch(err => alert("Error al iniciar cámara: " + err));
     }
 
+    // ==================== BÚSQUEDA Y RENDERIZADO ====================
     async function ejecutarBusqueda() {
-        const query = document.getElementById("searchInput").value.trim();
-        const results = document.getElementById("results");
-        results.innerHTML = "Buscando...";
+        const type = document.querySelector('input[name="searchType"]:checked').value;
+        const query = document.getElementById("searchInput").value.trim().toUpperCase();
+        const resultsDiv = document.getElementById("results");
+        const loader = document.getElementById("loader");
 
-        if (!datosPadron) {
-            const req = await fetch(`${API_URL}?action=consulta`);
-            datosPadron = await req.json();
+        if (!query) return;
+
+        resultsDiv.innerHTML = "";
+        loader.style.display = "block";
+
+        try {
+            // Descarga el padrón solo una vez por recarga de página para mayor velocidad
+            if (!datosPadron) {
+                const req = await fetch(`${API_URL}?action=consulta`);
+                datosPadron = await req.json();
+            }
+            loader.style.display = "none";
+
+            const socios = datosPadron.socios;
+            const predios = datosPadron.predios;
+
+            if (type === "dni") {
+                const socio = socios.find(s => s.DNI.toString() === query);
+                if (socio) {
+                    const prediosSocio = predios.filter(p => p.DNI_Socio.toString() === query);
+                    mostrarResultadosAgrupados(socio, prediosSocio);
+                } else {
+                    resultsDiv.innerHTML = "<div class='msg-error'>Socio no encontrado en el padrón.</div>";
+                }
+            } else {
+                const predio = predios.find(p => p.Código && p.Código.toString().toUpperCase() === query);
+                if (predio) {
+                    const socio = socios.find(s => s.DNI.toString() === predio.DNI_Socio.toString());
+                    mostrarResultadosAgrupados(socio || {Nombre: "Desconocido", DNI: predio.DNI_Socio}, [predio]);
+                } else {
+                    resultsDiv.innerHTML = "<div class='msg-error'>Código catastral no registrado.</div>";
+                }
+            }
+        } catch (error) {
+            loader.style.display = "none";
+            resultsDiv.innerHTML = "<div class='msg-error'>Error de red al consultar el padrón.</div>";
+        }
+    }
+
+    function mostrarResultadosAgrupados(socio, prediosArray) {
+        const resultsDiv = document.getElementById("results");
+        let html = `<div class="user-header"><h2>Socio: ${socio.Nombre}</h2><p>DNI: ${socio.DNI}</p></div>`;
+
+        if(prediosArray.length === 0) {
+            resultsDiv.innerHTML = html + `<p style="text-align:center;">No hay terrenos registrados.</p>`;
+            return;
         }
 
-        const socio = datosPadron.socios.find(s => s.DNI == query);
-        if (!socio) { results.innerHTML = "<b style='color:red;'>No encontrado</b>"; return; }
-
-        const predios = datosPadron.predios.filter(p => p.DNI_Socio == query);
-        let html = `<div style="background:var(--primary);color:white;padding:15px;border-radius:8px;">
-            <h3>${socio.Nombre}</h3><p>DNI: ${socio.DNI}</p></div>`;
-
-        predios.forEach(p => {
-            html += `<div style="border:1px solid #ddd; padding:15px; margin-top:10px; border-radius:8px;">
-                <b>Catastro: ${p.Código}</b><br>
-                Bocatoma: ${p.Bocatoma} | Área: ${p.Área} Ha`;
-
-            if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
-                html += `<div class="action-btns">
-                    <button class="btn-success" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Asistió')">Asistió</button>
-                    <button class="btn-warning" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Tarde')">Tarde</button>
-                    <button class="btn-danger" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Falta')">Falta</button>
-                </div>`;
-            }
-            if (rolActual === "TOTAL" || rolActual === "CONTADOR") {
-                html += `<div style="margin-top:10px; border-top:1px solid #ddd; padding-top:10px;">
-                    <input type="number" id="monto-${p.Código}" placeholder="Monto S/" style="width:48%; display:inline-block;">
-                    <button onclick="registrarPago('${p.Código}', '${socio.DNI}')" style="width:48%; display:inline-block;">Reg. Pago</button>
-                </div>`;
-            }
-            html += `</div>`;
+        const gruposBocatoma = {};
+        prediosArray.forEach(p => {
+            const bocatoma = p.Bocatoma || 'Sin Bocatoma';
+            if (!gruposBocatoma[bocatoma]) gruposBocatoma[bocatoma] = [];
+            gruposBocatoma[bocatoma].push(p);
         });
-        results.innerHTML = html;
+
+        for (const [bocatoma, prediosDelGrupo] of Object.entries(gruposBocatoma)) {
+            let sumaArea = 0;
+            prediosDelGrupo.forEach(p => { sumaArea += parseFloat(p.Área) || 0; });
+            const totalTopos = (sumaArea / 0.33).toFixed(2);
+
+            html += `
+            <div class="bocatoma-group">
+                <div class="bocatoma-header">
+                    <h3>📍 ${bocatoma}</h3>
+                    <span class="topos-badge">${totalTopos} Topos</span>
+                </div>`;
+
+            prediosDelGrupo.forEach((p, index) => {
+                const accordionId = 'panel-' + bocatoma.replace(/\s+/g, '') + '-' + index;
+                const deudas = Number(p.Deudas) || 0;
+                
+                html += `
+                <div class="predio-card" id="card-${accordionId}">
+                    <div class="predio-summary" onclick="toggleAcordeon('${accordionId}')">
+                        <div class="predio-info">
+                            <strong>Código: ${p.Código}</strong>
+                            <span>Área: ${p.Área || 0} Ha</span>
+                        </div>
+                        <div>▼</div>
+                    </div>
+                    
+                    <div class="predio-details" id="${accordionId}">
+                        <p><strong>Asistencias:</strong> ${p.Asistencias || 0}</p>
+                        <p><strong>Faltas:</strong> ${p.Faltas || 0}</p>
+                        <p><strong>Deuda:</strong> S/ ${deudas.toFixed(2)}</p>`;
+                
+                // INYECCIÓN DE CONTROLES DE ADMINISTRADOR (Si tiene permisos)
+                if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
+                    html += `
+                        <div class="action-btns">
+                            <button class="btn-success" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Asistió')">Asistió</button>
+                            <button class="btn-warning" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Tarde')">Tarde</button>
+                            <button class="btn-danger" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Falta')">Falta</button>
+                        </div>`;
+                }
+                
+                if (rolActual === "TOTAL" || rolActual === "CONTADOR") {
+                    html += `
+                        <div style="margin-top:15px; padding-top:10px; border-top: 1px solid #ccc;">
+                            <input type="number" id="monto-${p.Código}" placeholder="Monto (S/)" style="width: 48%; display: inline-block;">
+                            <button style="width: 48%; display: inline-block; background: #007bff;" onclick="registrarPago('${p.Código}', '${socio.DNI}')">Guardar Pago</button>
+                        </div>`;
+                }
+
+                html += `</div></div>`; // Cierra detalles y card
+            });
+            html += `</div>`; // Cierra grupo bocatoma
+        }
+        resultsDiv.innerHTML = html;
     }
 
+    function toggleAcordeon(id) {
+        const panel = document.getElementById(id);
+        panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
+
+    // ==================== ACCIONES DE ESCRITURA EN EXCEL ====================
     async function registrarAsistencia(catastro, dni, estado) {
         const idEvento = document.getElementById("idEvento").value;
-        if (!idEvento) return alert("Debe ingresar el ID del Evento (Ej: EV-001) en la parte superior.");
+        if (!idEvento) return alert("ATENCIÓN: Debes ingresar el ID del Evento (Ej: EV-001) en el panel de administrador.");
         
+        // Petición POST al servidor (Apps Script)
         await fetch(API_URL, {
             method: 'POST',
             body: JSON.stringify({ action: "registrar_asistencia", id_evento: idEvento, dni: dni, catastro: catastro, estado: estado })
         });
-        alert(`Asistencia guardada: ${estado}`);
+        alert(`Guardado: El terreno ${catastro} registra "${estado}".`);
     }
 
     async function registrarPago(catastro, dni) {
         const monto = document.getElementById(`monto-${catastro}`).value;
-        if (!monto) return alert("Ingrese un monto.");
+        if (!monto) return alert("Ingrese un monto válido.");
         
         await fetch(API_URL, {
             method: 'POST',
-            body: JSON.stringify({ action: "registrar_pago", catastro: catastro, dni: dni, monto: monto, concepto: "Aporte" })
+            body: JSON.stringify({ action: "registrar_pago", catastro: catastro, dni: dni, monto: monto, concepto: "Pago General" })
         });
-        alert(`Pago registrado: S/ ${monto}`);
+        alert(`Guardado: Pago de S/ ${monto} registrado para el terreno ${catastro}.`);
+        document.getElementById(`monto-${catastro}`).value = "";
     }
 </script>
 </body>
