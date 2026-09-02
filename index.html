@@ -3,171 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Regantes - Comisión de Usuarios de Agua de Huaro</title>
-    <!-- Tailwind CSS para diseño responsivo rápido y limpio -->
-    <script src="[enlace eliminado]"></script>
-</head>
-<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
-
-    <!-- Encabezado -->
-    <header class="bg-blue-700 text-white shadow-md py-6 px-4 text-center">
-        <h1 class="text-2xl md:text-3xl font-bold">Comisión de Usuarios de Agua de Huaro</h1>
-        <p class="text-blue-100 text-sm md:text-base mt-2">Plataforma Oficial de Consulta para el Sistema de Regantes</p>
-    </header>
-
-    <!-- Contenedor Principal -->
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
-        
-        <!-- Módulo de Búsqueda -->
-        <section class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Consulta de Estado por DNI</h2>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input 
-                    type="text" 
-                    id="dniField" 
-                    placeholder="Ingrese el DNI del socio (ej. 25197286)" 
-                    maxLength="8"
-                    class="flex-grow px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-lg"
-                >
-                <button 
-                    onclick="buscarSocio()" 
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-md transition duration-200 text-lg shadow-sm"
-                >
-                    Buscar Regante
-                </button>
-            </div>
-            <p id="statusMessage" class="mt-3 text-sm text-gray-500 hidden"></p>
-        </section>
-
-        <!-- Resultados de la Consulta (Oculto por defecto) -->
-        <section id="resultsSection" class="hidden space-y-6">
-            
-            <!-- Tarjeta del Socio -->
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Datos del Afiliado</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <span class="text-sm text-gray-500 block">Nombres y Apellidos</span>
-                        <strong id="nombreSocio" class="text-xl text-gray-900 block mt-0.5">-</strong>
-                    </div>
-                    <div>
-                        <span class="text-sm text-gray-500 block">Documento Nacional de Identidad</span>
-                        <strong id="dniSocio" class="text-xl text-gray-900 block mt-0.5">-</strong>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tabla de Predios Asociados -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-800">Predios y Derechos de Agua Registrados</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase font-semibold tracking-wider border-b border-gray-200">
-                                <th class="px-6 py-4">Código</th>
-                                <th class="px-6 py-4">Bocatoma / Canal</th>
-                                <th class="px-6 py-4 text-right">Área (ha)</th>
-                                <th class="px-6 py-4 text-center">Asistencias</th>
-                                <th class="px-6 py-4 text-center">Faltas</th>
-                                <th class="px-6 py-4 text-right">Deudas (S/)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="prediosTableBody" class="divide-y divide-gray-100 text-sm">
-                            <!-- Filas generadas dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </section>
-    </main>
-
-    <!-- Pie de página -->
-    <footer class="bg-gray-800 text-gray-400 text-xs py-6 px-4 border-t border-gray-700 text-center">
-        <p>&copy; 2026 Comisión de Usuarios de Agua de Huaro. Todos los derechos reservados.</p>
-    </footer>
-
-    <!-- Lógica de Conexión e Interfaz -->
-    <script>
-        function buscarSocio() {
-            const dniInput = document.getElementById('dniField').value.trim();
-            const statusMsg = document.getElementById('statusMessage');
-            const resultsSection = document.getElementById('resultsSection');
-            const tableBody = document.getElementById('prediosTableBody');
-            
-            // Tu URL oficial de Google Apps Script publicada
-            const urlApi = `[enlace eliminado]{dniInput}`;
-            
-            if (dniInput === "" || dniInput.length < 8) {
-                alert("Por favor, ingrese un número de DNI válido de 8 dígitos.");
-                return;
-            }
-
-            // Cambiar estado a cargando
-            statusMsg.className = "mt-3 text-sm text-blue-600 font-medium";
-            statusMsg.innerText = "Consultando padrón de regantes en tiempo real...";
-            statusMsg.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-            tableBody.innerHTML = "";
-
-            fetch(urlApi)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Error en la respuesta del servidor");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        statusMsg.className = "mt-3 text-sm text-red-600 font-medium";
-                        statusMsg.innerText = "Resultado: " + data.error;
-                        return;
-                    }
-                    
-                    // Ocultar mensaje de carga e incorporar datos del Socio
-                    statusMsg.classList.add('hidden');
-                    document.getElementById('nombreSocio').innerText = data.socio.nombre;
-                    document.getElementById('dniSocio').innerText = data.socio.dni;
-                    
-                    // Inyectar dinámicamente las filas de los predios asociados
-                    if (data.predios.length === 0) {
-                        tableBody.innerHTML = `
-                            <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-gray-400 italic">
-                                    El socio no registra predios vinculados actualmente.
-                                </td>
-                            </tr>`;
-                    } else {
-                        data.predios.forEach(predio => {
-                            // Formatear numéricos de forma segura
-                            const area = parseFloat(predio.area).toFixed(3);
-                            const deudas = parseFloat(predio.deudas).toFixed(2);
-                            const deudaClass = parseFloat(predio.deudas) > 0 ? 'text-red-600 font-semibold' : 'text-green-600 font-medium';
-
-                            const fila = `
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 font-mono font-medium text-gray-700">${predio.codigo}</td>
-                                    <td class="px-6 py-4 text-gray-900">${predio.bocatoma}</td>
-                                    <td class="px-6 py-4 text-right font-mono text-gray-600">${area}</td>
-                                    <td class="px-6 py-4 text-center font-mono text-gray-600">${predio.asistencias}</td>
-                                    <td class="px-6 py-4 text-center font-mono text-gray-600">${predio.faltas}</td>
-                                    <td class="px-6 py-4 text-right font-mono ${deudaClass}">S/ ${deudas}</td>
-                                </tr>`;
-                            tableBody.insertAdjacentHTML('beforeend', fila);
-                        });
-                    }
-                    
-                    // Mostrar sección de resultados
-                    resultsSection.classList.remove('hidden');
-                })
-                .catch(error => {
-                    console.error("Fallo de comunicación con la API:", error);
-                    statusMsg.className = "mt-3 text-sm text-red-600 font-medium";
-                    statusMsg.innerText = "Error de conexión. Verifique que la API de Sheets tenga accesos abiertos a 'Cualquier persona'.";
-                });
+    <title>Consulta Catastral - Pumacoccha Huaro</title>
+    <style>
+        :root {
+            --primary: #2c5e3b;
+            --secondary: #3b7b4e;
+            --bg-color: #f0f4f1;
+            --text-dark: #333;
+            --card-bg: #ffffff;
+            --danger: #d9534f;
+            --success: #28a745;
         }
-    </script>
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 22px;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .search-type {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .search-type label {
+            cursor: pointer;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(59, 123, 78, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        #results { margin-top: 25px; }
+
+        .user-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .user-header h2 { margin: 0 0 5px 0; font-size: 18px; }
+        .user-header p { margin: 0; opacity: 0.9; }
+
+        .predio-card {
+            border: 1px solid #e9ecef;
+            border-left: 5px solid var(--secondary);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+
+        .predio-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
+        .predio-card p { margin: 6px 0; font-size: 14px; display: flex; justify-content: space-between; border-bottom: 1px dashed #ddd; padding-bottom: 4px; }
+        .predio-card p:last-child { border-bottom: none; }
+        
+        .badge { padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
+        .badge.alert { background: #f8d7da; color: var(--danger); }
+        .badge.success { background: #d4edda; color: var(--success); }
+        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Comisión de Regantes<br><small>Sub-Sector Pumacoccha-Huaro</small></h1>
+    
+    <div class="search-type">
+        <label><input type="radio" name="searchType" value="dni" checked> DNI</label>
+        <label><input type="radio" name="searchType" value="catastro"> Código Catastral</label>
+    </div>
+    
+    <input type="text" id="searchInput" placeholder="Ingrese el DNI del socio...">
+    <button onclick="ejecutarBusqueda()">CONSULTAR DATOS</button>
+
+    <div class="loader" id="loader">Conectando con la base de datos...</div>
+    <div id="results"></div>
+</div>
+
+<script>
+    // TU ENLACE OFICIAL
+    const API_URL = "https://script.google.com/macros/s/AKfycbyaz1PJ7zcZrRrOx-vcToRoJwwQes4OZ-57PQb_P4qytYs1_4qL2JVU7-J8KBEAT47pMw/exec";
+
+    // Cambiar texto de ayuda según selección
+    document.querySelectorAll('input[name="searchType"]').forEach((elem) => {
+        elem.addEventListener("change", function(e) {
+            const input = document.getElementById("searchInput");
+            input.placeholder = e.target.value === "dni" ? "Ingrese el DNI del socio..." : "Ingrese el Código Catastral (Ej: P-001)...";
+            input.value = "";
+            document.getElementById("results").innerHTML = "";
+        });
+    });
+
+    async function ejecutarBusqueda() {
+        const type = document.querySelector('input[name="searchType"]:checked').value;
+        const query = document.getElementById("searchInput").value.trim().toUpperCase();
+        const resultsDiv = document.getElementById("results");
+        const loader = document.getElementById("loader");
+
+        if (!query) {
+            resultsDiv.innerHTML = "<div class='msg-error'>Por favor, ingrese un dato válido.</div>";
+            return;
+        }
+
+        resultsDiv.innerHTML = "";
+        loader.style.display = "block";
+
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            loader.style.display = "none";
+
+            const socios = data.socios;
+            const predios = data.predios;
+
+            if (type === "dni") {
+                // Buscar por DNI
+                const socio = socios.find(s => s.DNI.toString() === query);
+                if (socio) {
+                    const prediosSocio = predios.filter(p => p.DNI_Socio.toString() === query);
+                    mostrarResultadosSocio(socio, prediosSocio);
+                } else {
+                    resultsDiv.innerHTML = "<div class='msg-error'>Socio no encontrado en el padrón.</div>";
+                }
+            } else {
+                // Buscar por Código de Predio
+                const predio = predios.find(p => p.Código && p.Código.toString().toUpperCase() === query);
+                if (predio) {
+                    const socio = socios.find(s => s.DNI.toString() === predio.DNI_Socio.toString());
+                    mostrarResultadosSocio(socio || {Nombre: "Desconocido", DNI: predio.DNI_Socio}, [predio]);
+                } else {
+                    resultsDiv.innerHTML = "<div class='msg-error'>Código catastral no registrado.</div>";
+                }
+            }
+        } catch (error) {
+            loader.style.display = "none";
+            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión. Revise su internet o la URL del script.</div>";
+        }
+    }
+
+    function mostrarResultadosSocio(socio, prediosArray) {
+        const resultsDiv = document.getElementById("results");
+        
+        let html = `
+            <div class="user-header">
+                <h2>Socio: ${socio.Nombre}</h2>
+                <p>DNI: ${socio.DNI}</p>
+            </div>
+            <h3 style="color:#555; font-size: 15px; margin-bottom: 10px;">PREDIOS ASIGNADOS (${prediosArray.length})</h3>
+        `;
+
+        if(prediosArray.length === 0) {
+            html += `<p style="color:#666;">No hay predios registrados a este DNI.</p>`;
+        } else {
+            prediosArray.forEach(p => {
+                const deudas = Number(p.Deudas) || 0;
+                const faltas = Number(p.Faltas) || 0;
+                
+                const estadoDeuda = deudas > 0 ? 
+                    `<span class="badge alert">S/ ${deudas.toFixed(2)}</span>` : 
+                    `<span class="badge success">Al día</span>`;
+                    
+                const estadoFaltas = faltas > 0 ? 
+                    `<span class="badge alert">${faltas} Faltas</span>` : 
+                    `<span class="badge success">Sin faltas</span>`;
+
+                html += `
+                    <div class="predio-card">
+                        <h3>CÓDIGO: ${p.Código}</h3>
+                        <p><span>Bocatoma:</span> <strong>${p.Bocatoma}</strong></p>
+                        <p><span>Área:</span> <strong>${p.Área || 0} Ha</strong></p>
+                        <p><span>Asistencias:</span> <strong>${p.Asistencias || 0}</strong></p>
+                        <p><span>Faltas:</span> ${estadoFaltas}</p>
+                        <p><span>Estado de Pagos:</span> ${estadoDeuda}</p>
+                    </div>
+                `;
+            });
+        }
+        
+        resultsDiv.innerHTML = html;
+    }
+</script>
 </body>
 </html>
