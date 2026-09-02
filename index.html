@@ -52,85 +52,84 @@
             border-radius: 8px;
         }
 
-        .search-type label {
-            cursor: pointer;
-            font-weight: 600;
-            color: #555;
-        }
+        .search-type label { cursor: pointer; font-weight: 600; color: #555; }
 
         input[type="text"] {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
+            width: 100%; padding: 14px; border: 1px solid #ced4da;
+            border-radius: 8px; font-size: 16px; box-sizing: border-box;
             transition: border-color 0.3s;
         }
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(59, 123, 78, 0.2);
-        }
+        input[type="text"]:focus { outline: none; border-color: var(--secondary); }
 
         button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s ease;
+            width: 100%; padding: 14px; background-color: var(--secondary);
+            color: white; border: none; border-radius: 8px; font-size: 16px;
+            font-weight: bold; cursor: pointer; margin-top: 15px;
         }
 
-        button:hover {
-            background-color: var(--primary);
-            transform: translateY(-1px);
-        }
+        button:hover { background-color: var(--primary); }
 
-        .loader {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-            color: var(--secondary);
-            font-weight: bold;
-        }
-
-        #results { margin-top: 25px; }
-
-        .user-header {
-            background: var(--primary);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+        .loader { display: none; text-align: center; margin-top: 20px; color: var(--secondary); font-weight: bold; }
         
+        .user-header {
+            background: var(--primary); color: white; padding: 15px;
+            border-radius: 8px; margin-top: 25px; margin-bottom: 20px;
+        }
         .user-header h2 { margin: 0 0 5px 0; font-size: 18px; }
         .user-header p { margin: 0; opacity: 0.9; }
 
-        .predio-card {
-            border: 1px solid #e9ecef;
-            border-left: 5px solid var(--secondary);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            background-color: #fafafa;
+        /* Estilos de Grupo por Bocatoma */
+        .bocatoma-group {
+            background: #f8f9fa; border: 1px solid #dee2e6;
+            border-radius: 10px; padding: 15px; margin-bottom: 20px;
+        }
+        
+        .bocatoma-header {
+            border-bottom: 2px solid var(--secondary); padding-bottom: 10px; margin-bottom: 15px;
+        }
+        
+        .bocatoma-header h3 { margin: 0 0 5px 0; color: var(--text-dark); font-size: 17px; text-transform: uppercase; }
+        
+        .bocatoma-stats {
+            display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; color: #555;
+        }
+        
+        .topos-badge {
+            background-color: var(--secondary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 15px;
         }
 
-        .predio-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; }
-        .predio-card p { margin: 6px 0; font-size: 14px; display: flex; justify-content: space-between; border-bottom: 1px dashed #ddd; padding-bottom: 4px; }
-        .predio-card p:last-child { border-bottom: none; }
+        /* Estilos del Acordeón (Tarjetas Desplegables) */
+        .predio-card {
+            background: var(--card-bg); border: 1px solid #e0e0e0; border-left: 5px solid var(--primary);
+            border-radius: 8px; margin-bottom: 10px; overflow: hidden; transition: all 0.3s;
+        }
+        
+        .predio-summary {
+            padding: 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; background: #fff;
+        }
+        
+        .predio-summary:hover { background: #f1f8f3; }
+        
+        .predio-info strong { display: block; color: var(--primary); font-size: 15px; margin-bottom: 3px; }
+        .predio-info span { color: #666; font-size: 14px; }
+        
+        .predio-icon { font-size: 12px; color: #888; transition: transform 0.3s; }
+        .predio-card.active .predio-icon { transform: rotate(180deg); }
+        
+        /* Contenido Oculto (Tablas) */
+        .predio-details { display: none; padding: 0 15px 15px 15px; border-top: 1px dashed #eee; }
+        
+        .details-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .details-table td { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .details-table tr:last-child td { border-bottom: none; }
+        .text-right { text-align: right; }
         
         .badge { padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 12px; }
         .badge.alert { background: #f8d7da; color: var(--danger); }
         .badge.success { background: #d4edda; color: var(--success); }
-        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px;}
+        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 20px;}
     </style>
 </head>
 <body>
@@ -146,15 +145,13 @@
     <input type="text" id="searchInput" placeholder="Ingrese el DNI del socio...">
     <button onclick="ejecutarBusqueda()">CONSULTAR DATOS</button>
 
-    <div class="loader" id="loader">Conectando con la base de datos...</div>
+    <div class="loader" id="loader">Conectando con el padrón...</div>
     <div id="results"></div>
 </div>
 
 <script>
-    // TU ENLACE OFICIAL ACTUALIZADO
-    const API_URL = "https://script.google.com/macros/s/AKfycbyW6JZsWvVjfHmjHM0etF3HfjbYBRZd4aAMHSgVbD04osvq4FBtfjetqK3dkJJVTgyPpw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxq4ttvlV8r_I9d-EDnx34TS-SwFDkHLlhsE1iwqpj1jMya8uNrXHeOJjVkzhdDKc5lGQ/exec";
 
-    // Cambiar texto de ayuda según selección
     document.querySelectorAll('input[name="searchType"]').forEach((elem) => {
         elem.addEventListener("change", function(e) {
             const input = document.getElementById("searchInput");
@@ -187,31 +184,29 @@
             const predios = data.predios;
 
             if (type === "dni") {
-                // Buscar por DNI
                 const socio = socios.find(s => s.DNI.toString() === query);
                 if (socio) {
                     const prediosSocio = predios.filter(p => p.DNI_Socio.toString() === query);
-                    mostrarResultadosSocio(socio, prediosSocio);
+                    mostrarResultadosAgrupados(socio, prediosSocio);
                 } else {
                     resultsDiv.innerHTML = "<div class='msg-error'>Socio no encontrado en el padrón.</div>";
                 }
             } else {
-                // Buscar por Código de Predio
                 const predio = predios.find(p => p.Código && p.Código.toString().toUpperCase() === query);
                 if (predio) {
                     const socio = socios.find(s => s.DNI.toString() === predio.DNI_Socio.toString());
-                    mostrarResultadosSocio(socio || {Nombre: "Desconocido", DNI: predio.DNI_Socio}, [predio]);
+                    mostrarResultadosAgrupados(socio || {Nombre: "Socio Desconocido", DNI: predio.DNI_Socio}, [predio]);
                 } else {
                     resultsDiv.innerHTML = "<div class='msg-error'>Código catastral no registrado.</div>";
                 }
             }
         } catch (error) {
             loader.style.display = "none";
-            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión. Revise su internet o la URL del script.</div>";
+            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión. Revise su internet o recargue la página.</div>";
         }
     }
 
-    function mostrarResultadosSocio(socio, prediosArray) {
+    function mostrarResultadosAgrupados(socio, prediosArray) {
         const resultsDiv = document.getElementById("results");
         
         let html = `
@@ -219,38 +214,108 @@
                 <h2>Socio: ${socio.Nombre}</h2>
                 <p>DNI: ${socio.DNI}</p>
             </div>
-            <h3 style="color:#555; font-size: 15px; margin-bottom: 10px;">PREDIOS ASIGNADOS (${prediosArray.length})</h3>
         `;
 
         if(prediosArray.length === 0) {
-            html += `<p style="color:#666;">No hay predios registrados a este DNI.</p>`;
-        } else {
-            prediosArray.forEach(p => {
+            html += `<p style="text-align:center; color:#666;">No hay terrenos registrados a este DNI.</p>`;
+            resultsDiv.innerHTML = html;
+            return;
+        }
+
+        // 1. AGRUPAR PREDIOS POR BOCATOMA
+        const gruposBocatoma = {};
+        prediosArray.forEach(p => {
+            const bocatoma = p.Bocatoma || 'Sin Bocatoma Asignada';
+            if (!gruposBocatoma[bocatoma]) {
+                gruposBocatoma[bocatoma] = [];
+            }
+            gruposBocatoma[bocatoma].push(p);
+        });
+
+        // 2. CREAR EL HTML POR CADA GRUPO
+        for (const [bocatoma, prediosDelGrupo] of Object.entries(gruposBocatoma)) {
+            
+            // Sumar el área de todos los predios de esta bocatoma
+            let sumaArea = 0;
+            prediosDelGrupo.forEach(p => {
+                sumaArea += parseFloat(p.Área) || 0;
+            });
+            
+            // Convertir a Topos (Hectáreas / 0.33)
+            const totalTopos = (sumaArea / 0.33).toFixed(2);
+
+            html += `
+            <div class="bocatoma-group">
+                <div class="bocatoma-header">
+                    <h3>📍 Bocatoma: ${bocatoma}</h3>
+                    <div class="bocatoma-stats">
+                        <span>Suma Hectáreas: ${sumaArea.toFixed(3)} Ha</span>
+                        <span class="topos-badge">${totalTopos} Topos</span>
+                    </div>
+                </div>
+            `;
+
+            // Crear los recuadros desplegables de cada terreno
+            prediosDelGrupo.forEach((p, index) => {
                 const deudas = Number(p.Deudas) || 0;
                 const faltas = Number(p.Faltas) || 0;
                 
-                const estadoDeuda = deudas > 0 ? 
-                    `<span class="badge alert">S/ ${deudas.toFixed(2)}</span>` : 
-                    `<span class="badge success">Al día</span>`;
-                    
-                const estadoFaltas = faltas > 0 ? 
-                    `<span class="badge alert">${faltas} Faltas</span>` : 
-                    `<span class="badge success">Sin faltas</span>`;
+                const estadoDeuda = deudas > 0 ? `<span class="badge alert">S/ ${deudas.toFixed(2)}</span>` : `<span class="badge success">Al día</span>`;
+                const estadoFaltas = faltas > 0 ? `<span class="badge alert">${faltas} Faltas</span>` : `<span class="badge success">Sin faltas</span>`;
+                
+                // Generar un ID único para que el acordeón sepa cuál abrir
+                const accordionId = 'panel-' + bocatoma.replace(/\s+/g, '') + '-' + index;
 
                 html += `
-                    <div class="predio-card">
-                        <h3>CÓDIGO: ${p.Código}</h3>
-                        <p><span>Bocatoma:</span> <strong>${p.Bocatoma}</strong></p>
-                        <p><span>Área:</span> <strong>${p.Área || 0} Ha</strong></p>
-                        <p><span>Asistencias:</span> <strong>${p.Asistencias || 0}</strong></p>
-                        <p><span>Faltas:</span> ${estadoFaltas}</p>
-                        <p><span>Estado de Pagos:</span> ${estadoDeuda}</p>
+                <div class="predio-card" id="card-${accordionId}">
+                    <div class="predio-summary" onclick="toggleAcordeon('${accordionId}')">
+                        <div class="predio-info">
+                            <strong>Terreno Cód: ${p.Código}</strong>
+                            <span>Extensión: ${p.Área || 0} Ha</span>
+                        </div>
+                        <div class="predio-icon">▼</div>
                     </div>
+                    
+                    <div class="predio-details" id="${accordionId}">
+                        <table class="details-table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Asistencias (Asambleas/Faenas)</strong></td>
+                                    <td class="text-right">${p.Asistencias || 0}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Historial de Faltas</strong></td>
+                                    <td class="text-right">${estadoFaltas}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Deudas Pendientes</strong></td>
+                                    <td class="text-right">${estadoDeuda}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 `;
             });
+            
+            html += `</div>`; // Cierra el grupo de la bocatoma
         }
-        
+
         resultsDiv.innerHTML = html;
+    }
+
+    // Función que abre y cierra las tarjetas
+    function toggleAcordeon(id) {
+        const panel = document.getElementById(id);
+        const card = document.getElementById('card-' + id);
+        
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+            card.classList.remove("active");
+        } else {
+            panel.style.display = "block";
+            card.classList.add("active");
+        }
     }
 </script>
 </body>
