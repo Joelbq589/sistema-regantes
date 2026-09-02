@@ -4,160 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión - Pumacoccha Huaro</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        :root {
-            --primary: #2c5e3b; --secondary: #3b7b4e; --bg-color: #f0f4f1;
-            --text-dark: #333; --card-bg: #ffffff; --danger: #d9534f; --success: #28a745;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 500px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); position: relative; }
-        h1 { color: var(--primary); text-align: center; font-size: 22px; margin-top: 0; padding-bottom: 15px; border-bottom: 2px solid #e9ecef; }
-        
-        .search-type { display: flex; justify-content: space-around; margin-bottom: 20px; background: #e9ecef; padding: 10px; border-radius: 8px; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
-        button { width: 100%; padding: 14px; background-color: var(--secondary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
-        button:hover { background-color: var(--primary); }
-        
-        /* Botón de Acceso Administrativo Discreto */
-        .btn-admin-access { background: transparent; color: #888; padding: 5px; font-size: 12px; margin-top: 20px; text-decoration: underline; width: auto; }
-        .btn-admin-access:hover { background: transparent; color: var(--primary); }
-
-        /* Estilos del Modal de Login */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 350px; }
-        .modal-content h2 { margin-top: 0; color: var(--primary); text-align: center; }
-        .close-modal { text-align: right; cursor: pointer; color: var(--danger); font-weight: bold; margin-bottom: 10px; }
-        
-        /* Panel Administrativo (Oculto por defecto) */
-        #adminPanel { display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ffc107; }
-        
-        .loader { display: none; text-align: center; margin-top: 20px; color: var(--secondary); font-weight: bold; }
-        .msg-error { text-align: center; color: var(--danger); font-weight: bold; padding: 15px; background: #f8d7da; border-radius: 8px; margin-top: 15px;}
+        :root { --primary: #2c5e3b; --secondary: #3b7b4e; --bg-color: #f0f4f1; --danger: #d9534f; --success: #28a745; --warning: #ffc107; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        input, button, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
+        button { background-color: var(--secondary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-admin { background: transparent; color: #888; border: none; text-decoration: underline; font-size: 12px; margin-top: 20px; }
+        #reader { width: 100%; display: none; margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 2px solid var(--primary); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 350px; }
+        .action-btns { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-success { background: var(--success); } .btn-warning { background: var(--warning); color: #000; } .btn-danger { background: var(--danger); }
+        #adminPanel { display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Comisión de Regantes<br><small>Sub-Sector Pumacoccha-Huaro</small></h1>
+    <h1>Sub-Sector Pumacoccha-Huaro</h1>
 
-    <!-- PANEL ADMINISTRATIVO (Se activa al iniciar sesión) -->
     <div id="adminPanel">
-        <h3 id="adminTitle" style="margin-top:0; color: #856404;"></h3>
+        <h3 id="adminTitle" style="margin-top:0;"></h3>
+        <input type="text" id="idEvento" placeholder="ID Evento (Ej: EV-001)" style="display:none;">
         <div id="adminControls"></div>
-        <button style="background-color: var(--danger); margin-top: 10px; padding: 10px;" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <button style="background: var(--danger);" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
-    
-    <div class="search-type">
-        <label><input type="radio" name="searchType" value="dni" checked> DNI</label>
-        <label><input type="radio" name="searchType" value="catastro"> Código Catastral</label>
-    </div>
-    
-    <input type="text" id="searchInput" placeholder="Ingrese el DNI del socio...">
-    <button onclick="ejecutarBusqueda()">CONSULTAR PADRÓN</button>
 
-    <div class="loader" id="loader">Procesando petición...</div>
-    <div id="results"></div>
+    <div id="reader"></div>
 
-    <div style="text-align: center;">
-        <button class="btn-admin-access" onclick="document.getElementById('loginModal').style.display = 'flex'">Acceso Administrativo</button>
-    </div>
+    <input type="text" id="searchInput" placeholder="Ingrese DNI o Catastro...">
+    <button onclick="ejecutarBusqueda()">BUSCAR SOCIO</button>
+    
+    <div id="results" style="margin-top: 20px;"></div>
+    
+    <button class="btn-admin" onclick="document.getElementById('loginModal').style.display='flex'">Acceso Administrativo</button>
 </div>
 
-<!-- MODAL DE INICIO DE SESIÓN -->
+<!-- Modal Login -->
 <div id="loginModal" class="modal">
     <div class="modal-content">
-        <div class="close-modal" onclick="document.getElementById('loginModal').style.display = 'none'">X Cerrar</div>
-        <h2>Iniciar Sesión</h2>
+        <h2 style="color:var(--primary); margin-top:0;">Login</h2>
         <input type="text" id="usuarioInput" placeholder="Usuario">
         <input type="password" id="passwordInput" placeholder="Contraseña">
         <button onclick="iniciarSesion()">Ingresar</button>
-        <div id="loginMsg" style="text-align: center; margin-top: 10px; font-weight: bold;"></div>
+        <button class="btn-danger" onclick="document.getElementById('loginModal').style.display='none'">Cancelar</button>
+        <p id="loginMsg" style="text-align:center; color:var(--danger);"></p>
     </div>
 </div>
 
 <script>
-    // ⚠️ REEMPLAZA ESTE ENLACE POR EL NUEVO ENLACE DE TU SCRIPT
-    const API_URL = "https://script.google.com/macros/s/AKfycbxRNiT2A7YloqsKhHhKBgpjgFBLIwEkLsR3pnrbyBYpPLYy_TBOt--6BbKoBHGkAsegKg/exec";
-    
-    let rolActual = "PUBLICO"; // Por defecto, el usuario no tiene permisos
+    const API_URL = "https://script.google.com/macros/s/AKfycbwEA0dPJHtWupjtp7QihhUhmDiyDrJ5sOCvQNpM__M45YI6slb3sSJCmLSsDCPk-tlB6Q/exec"; // REEMPLAZA CON TU ENLACE NUEVO
+    let rolActual = "PUBLICO";
+    let html5QrcodeScanner;
+    let datosPadron = null; // Guardará la DB temporalmente para no saturar internet
 
     async function iniciarSesion() {
         const user = document.getElementById("usuarioInput").value;
         const pass = document.getElementById("passwordInput").value;
-        const msgDiv = document.getElementById("loginMsg");
-        
-        msgDiv.innerHTML = "Validando...";
-        msgDiv.style.color = "#333";
+        document.getElementById("loginMsg").innerText = "Validando...";
 
-        try {
-            const urlLogin = `${API_URL}?action=login&usuario=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
-            const response = await fetch(urlLogin);
-            const data = await response.json();
+        const response = await fetch(`${API_URL}?action=login&usuario=${user}&password=${pass}`);
+        const data = await response.json();
 
-            if (data.success) {
-                rolActual = data.rol;
-                document.getElementById("loginModal").style.display = "none";
-                activarPanelAdministrativo();
-                document.getElementById("usuarioInput").value = "";
-                document.getElementById("passwordInput").value = "";
-            } else {
-                msgDiv.innerHTML = data.mensaje;
-                msgDiv.style.color = "red";
-            }
-        } catch (error) {
-            msgDiv.innerHTML = "Error de conexión con el servidor.";
-            msgDiv.style.color = "red";
+        if (data.success) {
+            rolActual = data.rol;
+            document.getElementById("loginModal").style.display = "none";
+            activarPanelAdministrativo();
+        } else {
+            document.getElementById("loginMsg").innerText = data.mensaje;
         }
     }
 
     function activarPanelAdministrativo() {
-        const panel = document.getElementById("adminPanel");
-        const title = document.getElementById("adminTitle");
-        const controls = document.getElementById("adminControls");
+        document.getElementById("adminPanel").style.display = "block";
+        document.getElementById("adminTitle").innerText = `Rol: ${rolActual}`;
         
-        panel.style.display = "block";
-        title.innerHTML = `Sesión Activa: ${rolActual}`;
-
-        if (rolActual === "TOTAL") {
-            controls.innerHTML = "<p>Acceso total. Podrás editar pagos, asistencias y datos de usuarios al realizar una búsqueda.</p>";
-        } else if (rolActual === "ASISTENCIAS") {
-            controls.innerHTML = `<button style="background-color: #17a2b8;" onclick="abrirEscaner()">📸 Activar Escáner de Asistencias</button>`;
-        } else if (rolActual === "CONTADOR") {
-            controls.innerHTML = "<p>Modo Contador activo. Busca un predio para registrar pagos.</p>";
+        const controls = document.getElementById("adminControls");
+        if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
+            document.getElementById("idEvento").style.display = "block";
+            controls.innerHTML = `<button onclick="iniciarEscaner()">📸 Iniciar Escáner QR/Barras</button>`;
         }
     }
 
     function cerrarSesion() {
         rolActual = "PUBLICO";
         document.getElementById("adminPanel").style.display = "none";
-        document.getElementById("results").innerHTML = "";
+        document.getElementById("idEvento").style.display = "none";
+        if(html5QrcodeScanner) html5QrcodeScanner.clear();
+        document.getElementById("reader").style.display = "none";
     }
 
-    // Lógica de búsqueda modificada para enviar el Rol al servidor en el siguiente paso
+    function iniciarEscaner() {
+        document.getElementById("reader").style.display = "block";
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        html5QrcodeScanner.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: {width: 250, height: 250} },
+            (decodedText) => {
+                html5QrcodeScanner.stop();
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("searchInput").value = decodedText;
+                ejecutarBusqueda();
+            }
+        ).catch(err => alert("Error de cámara: " + err));
+    }
+
     async function ejecutarBusqueda() {
-        const type = document.querySelector('input[name="searchType"]:checked').value;
-        const query = document.getElementById("searchInput").value.trim().toUpperCase();
-        const resultsDiv = document.getElementById("results");
-        const loader = document.getElementById("loader");
+        const query = document.getElementById("searchInput").value.trim();
+        const results = document.getElementById("results");
+        results.innerHTML = "Buscando...";
 
-        if (!query) return;
-
-        resultsDiv.innerHTML = "";
-        loader.style.display = "block";
-
-        try {
-            const response = await fetch(`${API_URL}?action=consulta`);
-            const data = await response.json();
-            loader.style.display = "none";
-            
-            // Aquí iría la lógica de renderizado que ya teníamos,
-            // pero le inyectaremos botones si rolActual === "TOTAL" o "CONTADOR"
-            resultsDiv.innerHTML = `<div class="msg-error" style="background:#d4edda; color:#28a745;">Búsqueda ejecutada exitosamente. (El diseño se integrará en el siguiente paso).</div>`;
-
-        } catch (error) {
-            loader.style.display = "none";
-            resultsDiv.innerHTML = "<div class='msg-error'>Error de conexión.</div>";
+        if (!datosPadron) {
+            const req = await fetch(`${API_URL}?action=consulta`);
+            datosPadron = await req.json();
         }
+
+        const socio = datosPadron.socios.find(s => s.DNI == query);
+        if (!socio) { results.innerHTML = "<b style='color:red;'>No encontrado</b>"; return; }
+
+        const predios = datosPadron.predios.filter(p => p.DNI_Socio == query);
+        let html = `<div style="background:var(--primary);color:white;padding:15px;border-radius:8px;">
+            <h3>${socio.Nombre}</h3><p>DNI: ${socio.DNI}</p></div>`;
+
+        predios.forEach(p => {
+            html += `<div style="border:1px solid #ddd; padding:15px; margin-top:10px; border-radius:8px;">
+                <b>Catastro: ${p.Código}</b><br>
+                Bocatoma: ${p.Bocatoma} | Área: ${p.Área} Ha`;
+
+            if (rolActual === "TOTAL" || rolActual === "ASISTENCIAS") {
+                html += `<div class="action-btns">
+                    <button class="btn-success" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Asistió')">Asistió</button>
+                    <button class="btn-warning" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Tarde')">Tarde</button>
+                    <button class="btn-danger" onclick="registrarAsistencia('${p.Código}', '${socio.DNI}', 'Falta')">Falta</button>
+                </div>`;
+            }
+            if (rolActual === "TOTAL" || rolActual === "CONTADOR") {
+                html += `<div style="margin-top:10px; border-top:1px solid #ddd; padding-top:10px;">
+                    <input type="number" id="monto-${p.Código}" placeholder="Monto S/" style="width:48%; display:inline-block;">
+                    <button onclick="registrarPago('${p.Código}', '${socio.DNI}')" style="width:48%; display:inline-block;">Reg. Pago</button>
+                </div>`;
+            }
+            html += `</div>`;
+        });
+        results.innerHTML = html;
+    }
+
+    async function registrarAsistencia(catastro, dni, estado) {
+        const idEvento = document.getElementById("idEvento").value;
+        if (!idEvento) return alert("Debe ingresar el ID del Evento (Ej: EV-001) en la parte superior.");
+        
+        await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "registrar_asistencia", id_evento: idEvento, dni: dni, catastro: catastro, estado: estado })
+        });
+        alert(`Asistencia guardada: ${estado}`);
+    }
+
+    async function registrarPago(catastro, dni) {
+        const monto = document.getElementById(`monto-${catastro}`).value;
+        if (!monto) return alert("Ingrese un monto.");
+        
+        await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "registrar_pago", catastro: catastro, dni: dni, monto: monto, concepto: "Aporte" })
+        });
+        alert(`Pago registrado: S/ ${monto}`);
     }
 </script>
 </body>
